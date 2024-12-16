@@ -52,15 +52,14 @@ export default {
   padding: 15px;
   font-size: 16px;
   line-height: 1.5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  resize: vertical;
+  border: none;
+  resize: none;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .note-textarea:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0,123,255,.25);
+  border: none;
+  box-shadow: none;
 }
 </style>
