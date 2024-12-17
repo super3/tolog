@@ -19,6 +19,7 @@
     "wait-on": "^7.0.1"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "marked": "^11.0.0",
     "vue": "^3.3.0",
     "vue-router": "^4.2.0",
