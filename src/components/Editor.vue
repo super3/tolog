@@ -37,10 +37,11 @@ export default {
 .editor {
   height: 100vh;
   width: 100%;
+  margin-top: 40px;
 }
 
 .editor-container {
-  height: 100%;
+  height: calc(100% - 40px);
   width: 100%;
 }
 
@@ -68,7 +69,7 @@ export default {
 
 .note-textarea::-webkit-scrollbar-thumb {
   background: #888;
-  border-radius: 0; /* Removed border radius for square corners */
+  border-radius: 0;
 }
 
 .note-textarea::-webkit-scrollbar-thumb:hover {
