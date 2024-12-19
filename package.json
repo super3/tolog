@@ -7,7 +7,21 @@
     "start": "electron .",
     "dev": "vite dev & wait-on http://localhost:5173 && electron . --dev",
     "build": "vite build && electron-builder",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clean": "rimraf dist",
+    "lint": "eslint . --ext .js,.vue",
+    "test": "vitest"
+  },
+  "build": {
+    "appId": "com.memly.app",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "package.json"
+    ]
   },
   "author": "",
   "license": "MIT",

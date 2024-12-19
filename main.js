@@ -22,10 +22,10 @@ function createWindow() {
         ...details.responseHeaders,
         'Content-Security-Policy': [
           "default-src 'self'",
-          "script-src 'self'",
-          "style-src 'self' 'unsafe-inline'",
+          "script-src 'self' 'unsafe-inline'",
+          "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
           "img-src 'self' data: https:",
-          "font-src 'self' data:",
+          "font-src 'self' data: https://cdn.jsdelivr.net",
           "connect-src 'self' ws://localhost:5173"
         ].join('; ')
       }
