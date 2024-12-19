@@ -2,7 +2,7 @@
   <v-app>
     <v-main style="overflow-y: auto !important;">
       <div class="settings-icon">
-        <v-icon icon="mdi-cog" size="20"></v-icon>
+        <v-icon icon="mdi-cog" size="16"></v-icon>
       </div>
       <router-view></router-view>
     </v-main>
@@ -26,8 +26,8 @@ html, body {
 
 .settings-icon {
   position: fixed;
-  top: 12px;
-  right: 10px;
+  top: 5px;
+  right: 7px;
   z-index: 1000;
   cursor: pointer;
   color: #888;
