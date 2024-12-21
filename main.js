@@ -37,6 +37,11 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
   }
+
+  // Handle window close event
+  mainWindow.on('close', () => {
+    app.quit();
+  });
 }
 
 app.whenReady().then(createWindow);
