@@ -27,18 +27,36 @@
           
           <v-divider></v-divider>
           
-          <!-- Add your settings options here -->
           <v-list-item>
-            <v-list-item-title>Theme</v-list-item-title>
+            <v-list-item-title>Font Size</v-list-item-title>
+            <template v-slot:append>
+              <div class="d-flex align-center">
+                <v-btn
+                  icon="mdi-minus"
+                  variant="text"
+                  size="small"
+                  @click="decrementFontSize"
+                  :disabled="fontSize <= 8"
+                ></v-btn>
+                <span class="mx-2">{{ fontSize }}</span>
+                <v-btn
+                  icon="mdi-plus"
+                  variant="text"
+                  size="small"
+                  @click="incrementFontSize"
+                  :disabled="fontSize >= 32"
+                ></v-btn>
+              </div>
+            </template>
           </v-list-item>
           
           <v-list-item>
-            <v-list-item-title>Font Size</v-list-item-title>
+            <v-list-item-title>Theme</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
 
-      <router-view></router-view>
+      <router-view :font-size="fontSize"></router-view>
     </v-main>
   </v-app>
 </template>
@@ -48,12 +66,32 @@ export default {
   name: 'App',
   data() {
     return {
-      showSettings: false
+      showSettings: false,
+      fontSize: 16
     }
   },
   methods: {
     toggleSettings() {
       this.showSettings = !this.showSettings
+    },
+    incrementFontSize() {
+      if (this.fontSize < 32) {
+        this.fontSize += 1
+        localStorage.setItem('fontSize', this.fontSize)
+      }
+    },
+    decrementFontSize() {
+      if (this.fontSize > 8) {
+        this.fontSize -= 1
+        localStorage.setItem('fontSize', this.fontSize)
+      }
+    }
+  },
+  mounted() {
+    // Load saved font size from localStorage
+    const savedFontSize = localStorage.getItem('fontSize')
+    if (savedFontSize) {
+      this.fontSize = parseInt(savedFontSize)
     }
   }
 }

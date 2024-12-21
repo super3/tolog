@@ -6,6 +6,7 @@
         placeholder="Start writing your note here..."
         @input="saveNote"
         class="note-textarea"
+        :style="{ fontSize: fontSize + 'px' }"
       ></textarea>
     </div>
   </div>
@@ -14,6 +15,12 @@
 <script>
 export default {
   name: 'Editor',
+  props: {
+    fontSize: {
+      type: Number,
+      default: 16
+    }
+  },
   data() {
     return {
       noteContent: ''
@@ -49,7 +56,6 @@ export default {
   width: 100%;
   height: 100%;
   padding: 20px;
-  font-size: 16px;
   line-height: 1.5;
   border: none;
   resize: none;
