@@ -1,8 +1,8 @@
 <template>
   <v-app>
-    <v-main style="overflow-y: auto !important;">
+    <v-main style="overflow-y: auto !important;" :style="{ background: selectedTheme }">
       <div class="settings-icon" @click="toggleSettings">
-        <v-icon icon="mdi-cog" size="16"></v-icon>
+        <v-icon icon="mdi-cog" size="16" :style="{ color: getTextColor }"></v-icon>
       </div>
       
       <!-- Settings Sidebar -->
@@ -51,12 +51,24 @@
           </v-list-item>
           
           <v-list-item>
-            <v-list-item-title>Theme</v-list-item-title>
+            <v-list-item-title>Themes</v-list-item-title>
+            <template v-slot:append>
+              <div class="d-flex align-center">
+                <div 
+                  v-for="theme in themes" 
+                  :key="theme.color"
+                  class="theme-circle"
+                  :style="{ backgroundColor: theme.color }"
+                  :class="{ 'selected': selectedTheme === theme.color }"
+                  @click="selectTheme(theme.color)"
+                ></div>
+              </div>
+            </template>
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
 
-      <router-view :font-size="fontSize"></router-view>
+      <router-view :font-size="fontSize" :text-color="getTextColor"></router-view>
     </v-main>
   </v-app>
 </template>
@@ -67,7 +79,20 @@ export default {
   data() {
     return {
       showSettings: false,
-      fontSize: 16
+      fontSize: 16,
+      selectedTheme: '#ffffff',
+      themes: [
+        { color: '#ffffff', textColor: '#000000' }, // white theme with black text
+        { color: '#002B36', textColor: '#93A1A1' }, // solarized dark
+        { color: '#1A237E', textColor: '#C5CAE9' }, // dark blue with light blue text
+        { color: '#4A148C', textColor: '#E1BEE7' }  // dark purple with light purple text
+      ]
+    }
+  },
+  computed: {
+    getTextColor() {
+      const theme = this.themes.find(t => t.color === this.selectedTheme)
+      return theme ? theme.textColor : '#000000'
     }
   },
   methods: {
@@ -76,15 +101,19 @@ export default {
     },
     incrementFontSize() {
       if (this.fontSize < 32) {
-        this.fontSize += 1
+        this.fontSize += 2
         localStorage.setItem('fontSize', this.fontSize)
       }
     },
     decrementFontSize() {
       if (this.fontSize > 8) {
-        this.fontSize -= 1
+        this.fontSize -= 2
         localStorage.setItem('fontSize', this.fontSize)
       }
+    },
+    selectTheme(color) {
+      this.selectedTheme = color
+      localStorage.setItem('theme', color)
     }
   },
   mounted() {
@@ -92,6 +121,12 @@ export default {
     const savedFontSize = localStorage.getItem('fontSize')
     if (savedFontSize) {
       this.fontSize = parseInt(savedFontSize)
+    }
+    
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme) {
+      this.selectedTheme = savedTheme
     }
   }
 }
@@ -139,5 +174,23 @@ html, body {
 
 .v-navigation-drawer {
   z-index: 1000;
+}
+
+.theme-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin: 0 4px;
+  cursor: pointer;
+  border: 2px solid #ddd;
+  transition: border-color 0.2s ease;
+}
+
+.theme-circle:hover {
+  border-color: #666;
+}
+
+.theme-circle.selected {
+  border-color: #000;
 }
 </style> 

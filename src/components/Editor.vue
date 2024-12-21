@@ -6,7 +6,10 @@
         placeholder="Start writing your note here..."
         @input="saveNote"
         class="note-textarea"
-        :style="{ fontSize: fontSize + 'px' }"
+        :style="{ 
+          fontSize: fontSize + 'px',
+          color: textColor
+        }"
       ></textarea>
     </div>
   </div>
@@ -19,6 +22,10 @@ export default {
     fontSize: {
       type: Number,
       default: 16
+    },
+    textColor: {
+      type: String,
+      default: '#000000'
     }
   },
   data() {
@@ -62,6 +69,11 @@ export default {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-y: auto;
   background: transparent;
+}
+
+.note-textarea::placeholder {
+  color: inherit;
+  opacity: 0.5;
 }
 
 /* Scrollbar styling with square corners */
