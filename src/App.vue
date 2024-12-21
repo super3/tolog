@@ -93,6 +93,15 @@ export default {
     getTextColor() {
       const theme = this.themes.find(t => t.color === this.selectedTheme)
       return theme ? theme.textColor : '#000000'
+    },
+    getScrollbarColor() {
+      const theme = this.themes.find(t => t.color === this.selectedTheme)
+      const color = theme ? theme.textColor : '#000000'
+      // Convert hex to rgb with opacity
+      const r = parseInt(color.slice(1, 3), 16)
+      const g = parseInt(color.slice(3, 5), 16)
+      const b = parseInt(color.slice(5, 7), 16)
+      return `rgba(${r}, ${g}, ${b}, 0.2)`
     }
   },
   methods: {
@@ -160,16 +169,16 @@ html, body {
 }
 
 .v-main::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
 .v-main::-webkit-scrollbar-thumb {
-  background: #888;
+  background: v-bind('getScrollbarColor');
   border-radius: 0;
 }
 
 .v-main::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: v-bind('getScrollbarColor').replace('0.2', '0.3');
 }
 
 .v-navigation-drawer {

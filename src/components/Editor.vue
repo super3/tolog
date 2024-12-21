@@ -43,6 +43,15 @@ export default {
     if (savedNote) {
       this.noteContent = savedNote
     }
+  },
+  computed: {
+    scrollbarColor() {
+      // Convert hex to rgb with opacity
+      const r = parseInt(this.textColor.slice(1, 3), 16)
+      const g = parseInt(this.textColor.slice(3, 5), 16)
+      const b = parseInt(this.textColor.slice(5, 7), 16)
+      return `rgba(${r}, ${g}, ${b}, 0.2)`
+    }
   }
 }
 </script>
@@ -76,22 +85,26 @@ export default {
   opacity: 0.5;
 }
 
-/* Scrollbar styling with square corners */
-.note-textarea::-webkit-scrollbar {
+/* Scrollbar styling */
+.note-textarea::-webkit-scrollbar,
+.markdown-preview::-webkit-scrollbar {
   width: 10px;
 }
 
-.note-textarea::-webkit-scrollbar-track {
-  background: #f1f1f1;
+.note-textarea::-webkit-scrollbar-track,
+.markdown-preview::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.note-textarea::-webkit-scrollbar-thumb {
-  background: #888;
+.note-textarea::-webkit-scrollbar-thumb,
+.markdown-preview::-webkit-scrollbar-thumb {
+  background: v-bind('scrollbarColor');
   border-radius: 0;
 }
 
-.note-textarea::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.note-textarea::-webkit-scrollbar-thumb:hover,
+.markdown-preview::-webkit-scrollbar-thumb:hover {
+  background: v-bind('scrollbarColor').replace('0.2', '0.3');
 }
 
 .note-textarea:focus {
