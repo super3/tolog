@@ -1,5 +1,6 @@
 {
-  "name": "memly",
+  "name": "tolog",
+  "productName": "Tolog",
   "version": "0.1.0",
   "description": "An open-source markdown-based note-taking app",
   "main": "main.js",
@@ -13,7 +14,7 @@
     "test": "vitest"
   },
   "build": {
-    "appId": "com.memly.app",
+    "appId": "com.tolog.app",
     "directories": {
       "output": "dist"
     },

@@ -2,12 +2,16 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const isDev = process.argv.includes('--dev');
 
+// Set the app name (this will show in the menu bar)
+app.name = 'Tolog';
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     frame: false,
     titleBarStyle: 'hiddenInset',
+    title: 'Tolog',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
