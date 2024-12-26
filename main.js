@@ -8,7 +8,7 @@ app.name = 'Tolog';
 if (process.platform === 'darwin') {
   try {
     // Use PNG for development
-    const iconPath = path.join(__dirname, 'public/icon.png')
+    const iconPath = path.join(__dirname, 'src/assets/icons/png/icon.png')
     console.log('Loading icon from:', iconPath) // Debug log
     app.dock.setIcon(iconPath)
   } catch (error) {
