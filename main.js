@@ -5,6 +5,17 @@ const isDev = process.argv.includes('--dev');
 // Set the app name (this will show in the menu bar)
 app.name = 'Tolog';
 
+if (process.platform === 'darwin') {
+  try {
+    // Use PNG for development
+    const iconPath = path.join(__dirname, 'public/icon.png')
+    console.log('Loading icon from:', iconPath) // Debug log
+    app.dock.setIcon(iconPath)
+  } catch (error) {
+    console.error('Failed to load icon:', error) // Error handling
+  }
+}
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
@@ -16,7 +27,8 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
       webSecurity: true
-    }
+    },
+    icon: path.join(__dirname, 'public/icon.png')
   });
 
   // Set Content Security Policy

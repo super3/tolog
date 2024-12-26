@@ -22,7 +22,16 @@
       "dist/**/*",
       "main.js",
       "package.json"
-    ]
+    ],
+    "mac": {
+      "icon": "public/icon.icns"
+    },
+    "win": {
+      "icon": "public/icon.ico"
+    },
+    "linux": {
+      "icon": "public/icon.png"
+    }
   },
   "author": "",
   "license": "MIT",

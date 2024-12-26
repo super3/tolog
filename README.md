@@ -11,6 +11,14 @@ Memly is an open-source note-taking application that uses markdown files for sto
 
 ## Development
 
+### Icon Generation
+To generate the application icons:
+
+1. The source icon is an SVG file located at `src/assets/journal-icon.svg`
+2. Generate PNG from SVG: `bash convert -background none src/assets/journal-icon.svg public/icon.png`
+
+Note: Requires ImageMagick to be installed (`brew install imagemagick` on macOS).
+
 ### Prerequisites
 
 - Node.js (v16 or higher)

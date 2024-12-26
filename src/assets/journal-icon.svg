@@ -1,0 +1,24 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="background-color: transparent;">
+  <!-- Optional: explicit transparent background -->
+  <rect x="0" y="0" width="512" height="512" fill="none"/>
+  
+  <!-- Main journal/book shape with lighter Solarized base -->
+  <rect x="56" y="56" width="400" height="400" rx="24" fill="#073642"/>
+  
+  <!-- Pages effect on the right side - even lighter -->
+  <rect x="424" y="56" width="32" height="400" rx="12" fill="#586e75"/>
+  
+  <!-- Binding/spine detail - darker -->
+  <rect x="56" y="56" width="40" height="400" rx="12" fill="#002b36"/>
+  
+  <!-- Decorative lines representing text - brighter color -->
+  <rect x="136" y="116" width="240" height="12" rx="6" fill="#eee8d5"/>
+  <rect x="136" y="166" width="240" height="12" rx="6" fill="#eee8d5"/>
+  <rect x="136" y="216" width="240" height="12" rx="6" fill="#eee8d5"/>
+  <rect x="136" y="266" width="240" height="12" rx="6" fill="#eee8d5"/>
+  <rect x="136" y="316" width="240" height="12" rx="6" fill="#eee8d5"/>
+  <rect x="136" y="366" width="240" height="12" rx="6" fill="#eee8d5"/>
+  
+  <!-- Bookmark ribbon - brighter red -->
+  <path d="M380 56 L380 156 L350 126 L320 156 L320 56 Z" fill="#dc322f"/>
+</svg> 
