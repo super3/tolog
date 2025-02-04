@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const isDev = process.argv.includes('--dev');
 
@@ -72,4 +72,16 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
-}); 
+});
+
+// Add this with your other IPC handlers
+ipcMain.handle('dialog:openDirectory', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory', 'createDirectory']
+  })
+  
+  return {
+    canceled: result.canceled,
+    filePath: result.filePaths[0]
+  }
+}) 

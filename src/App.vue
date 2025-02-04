@@ -66,6 +66,22 @@
               </div>
             </template>
           </v-list-item>
+          
+          <v-list-item>
+            <v-list-item-title>Journal Location</v-list-item-title>
+            <template v-slot:append>
+              <div class="folder-select">
+                <input 
+                  type="text" 
+                  :value="journalPath" 
+                  readonly 
+                  placeholder="Choose folder location..."
+                  class="folder-input"
+                />
+                <button @click="chooseFolder" class="folder-button">Choose Folder</button>
+              </div>
+            </template>
+          </v-list-item>
         </v-list>
       </v-navigation-drawer>
 
@@ -75,19 +91,26 @@
 </template>
 
 <script>
+const { ipcRenderer } = require('electron')
+import Editor from './components/Editor.vue'
+
 export default {
   name: 'App',
+  components: {
+    Editor
+  },
   data() {
     return {
       showSettings: false,
       fontSize: 16,
-      selectedTheme: '#ffffff',
+      selectedTheme: '#002B36',
       themes: [
+        { name: 'Solarized Dark', color: '#002B36', textColor: '#93A1A1' },
         { color: '#ffffff', textColor: '#000000' }, // white theme with black text
-        { color: '#002B36', textColor: '#93A1A1' }, // solarized dark
         { color: '#1A237E', textColor: '#C5CAE9' }, // dark blue with light blue text
         { color: '#4A148C', textColor: '#E1BEE7' }  // dark purple with light purple text
-      ]
+      ],
+      journalPath: localStorage.getItem('journalPath') || ''
     }
   },
   computed: {
@@ -124,6 +147,17 @@ export default {
     selectTheme(color) {
       this.selectedTheme = color
       localStorage.setItem('theme', color)
+    },
+    async chooseFolder() {
+      try {
+        const result = await ipcRenderer.invoke('dialog:openDirectory')
+        if (!result.canceled && result.filePath) {
+          this.journalPath = result.filePath
+          localStorage.setItem('journalPath', result.filePath)
+        }
+      } catch (err) {
+        console.error('Failed to choose folder:', err)
+      }
     }
   },
   mounted() {
@@ -225,5 +259,46 @@ input,
 select,
 a {
   -webkit-app-region: no-drag !important;
+}
+
+.setting-group {
+  margin-bottom: 1rem;
+}
+
+.setting-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #93A1A1;
+}
+
+.folder-select {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.folder-input {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  color: #000000;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.folder-button {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.folder-button:hover {
+  background: #f0f0f0;
 }
 </style> 

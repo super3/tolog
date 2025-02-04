@@ -1,17 +1,13 @@
 <template>
   <div class="editor">
-    <div class="editor-container">
-      <textarea 
-        v-model="noteContent"
-        placeholder="Start writing your note here..."
-        @input="saveNote"
-        class="note-textarea"
-        :style="{ 
-          fontSize: fontSize + 'px',
-          color: textColor
-        }"
-      ></textarea>
-    </div>
+    <h2>{{ formattedDate }}</h2>
+    <textarea
+      ref="textarea"
+      v-model="content"
+      :style="{ color: textColor }"
+      @input="handleInput"
+      placeholder="Start typing..."
+    ></textarea>
   </div>
 </template>
 
@@ -19,38 +15,29 @@
 export default {
   name: 'Editor',
   props: {
-    fontSize: {
-      type: Number,
-      default: 16
-    },
-    textColor: {
-      type: String,
-      default: '#000000'
-    }
+    textColor: String
   },
   data() {
     return {
-      noteContent: ''
-    }
-  },
-  methods: {
-    saveNote() {
-      localStorage.setItem('currentNote', this.noteContent)
-    }
-  },
-  mounted() {
-    const savedNote = localStorage.getItem('currentNote')
-    if (savedNote) {
-      this.noteContent = savedNote
+      content: ''
     }
   },
   computed: {
-    scrollbarColor() {
-      // Convert hex to rgb with opacity
-      const r = parseInt(this.textColor.slice(1, 3), 16)
-      const g = parseInt(this.textColor.slice(3, 5), 16)
-      const b = parseInt(this.textColor.slice(5, 7), 16)
-      return `rgba(${r}, ${g}, ${b}, 0.2)`
+    formattedDate() {
+      const date = new Date()
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }).replace(/(\d+)(?=(,\s\d+)$)/, (match) => {
+        const suffix = ['th', 'st', 'nd', 'rd'][(match > 3 && match < 21) || match % 10 > 3 ? 0 : match % 10]
+        return match + suffix
+      })
+    }
+  },
+  methods: {
+    handleInput() {
+      this.$emit('update:content', this.content)
     }
   }
 }
@@ -58,58 +45,25 @@ export default {
 
 <style scoped>
 .editor {
-  height: 100vh;
-  width: 100%;
-  margin-top: 40px;
-}
-
-.editor-container {
-  height: calc(100% - 40px);
-  width: 100%;
-}
-
-.note-textarea {
-  width: 100%;
   height: 100%;
-  padding: 20px;
-  line-height: 1.5;
+  padding: 40px 20px 20px 20px;
+}
+
+h2 {
+  margin-bottom: 0.5rem;
+  color: #93A1A1;
+  font-size: 2rem;
+}
+
+textarea {
+  width: 100%;
+  height: calc(100% - 60px);
+  background: transparent;
   border: none;
-  resize: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  overflow-y: auto;
-  background: transparent;
-}
-
-.note-textarea::placeholder {
-  color: inherit;
-  opacity: 0.5;
-}
-
-/* Scrollbar styling */
-.note-textarea::-webkit-scrollbar,
-.markdown-preview::-webkit-scrollbar {
-  width: 10px;
-}
-
-.note-textarea::-webkit-scrollbar-track,
-.markdown-preview::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.note-textarea::-webkit-scrollbar-thumb,
-.markdown-preview::-webkit-scrollbar-thumb {
-  background: v-bind('scrollbarColor');
-  border-radius: 0;
-}
-
-.note-textarea::-webkit-scrollbar-thumb:hover,
-.markdown-preview::-webkit-scrollbar-thumb:hover {
-  background: v-bind('scrollbarColor').replace('0.2', '0.3');
-}
-
-.note-textarea:focus {
   outline: none;
-  border: none;
-  box-shadow: none;
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: none;
+  padding: 0;
 }
 </style>
