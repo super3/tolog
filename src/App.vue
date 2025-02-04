@@ -216,11 +216,14 @@ html, body {
   background: transparent;
 }
 
-/* Make sure buttons/inputs in the titlebar are still clickable */
-.titlebar button,
-.titlebar input,
-.titlebar select,
-.titlebar a {
-  -webkit-app-region: no-drag;
+/* Make all interactive elements in the header non-draggable */
+.header,
+.header *,
+.settings-icon,
+button,
+input,
+select,
+a {
+  -webkit-app-region: no-drag !important;
 }
 </style> 
