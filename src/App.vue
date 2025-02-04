@@ -1,4 +1,5 @@
 <template>
+  <div class="titlebar"></div>
   <v-app>
     <v-main style="overflow-y: auto !important;" :style="{ background: selectedTheme }">
       <div class="settings-icon" @click="toggleSettings">
@@ -201,5 +202,25 @@ html, body {
 
 .theme-circle.selected {
   border-color: #000;
+}
+
+/* Add this to your <style> section */
+.titlebar {
+  -webkit-app-region: drag;
+  height: 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: transparent;
+}
+
+/* Make sure buttons/inputs in the titlebar are still clickable */
+.titlebar button,
+.titlebar input,
+.titlebar select,
+.titlebar a {
+  -webkit-app-region: no-drag;
 }
 </style> 
