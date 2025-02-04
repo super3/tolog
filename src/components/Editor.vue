@@ -1,13 +1,14 @@
 <template>
   <div class="editor">
-    <h2>{{ formattedDate }}</h2>
-    <textarea
-      ref="textarea"
-      v-model="content"
-      :style="{ color: textColor }"
-      @input="handleInput"
-      placeholder="Start typing..."
-    ></textarea>
+    <div v-for="entry in entries" :key="entry.date" class="entry">
+      <h2>{{ formatDate(entry.date) }}</h2>
+      <textarea
+        v-model="entry.content"
+        :style="{ color: textColor }"
+        @input="autoResize($event); saveEntry(entry)"
+        placeholder="Start typing..."
+      ></textarea>
+    </div>
   </div>
 </template>
 
@@ -22,13 +23,13 @@ export default {
   },
   data() {
     return {
-      content: '',
-      lastSavedContent: ''
+      entries: []
     }
   },
-  computed: {
-    formattedDate() {
-      const date = new Date()
+  methods: {
+    formatDate(filename) {
+      const [year, month, day] = filename.replace('.md', '').split('_')
+      const date = new Date(year, month - 1, day)
       return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -38,45 +39,81 @@ export default {
         return match + suffix
       })
     },
-    filename() {
+    getTodayFilename() {
       const date = new Date()
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
       return `${year}_${month}_${day}.md`
-    }
-  },
-  methods: {
-    handleInput() {
-      this.saveContent()
     },
-    async saveContent() {
+    async loadEntries() {
       const journalPath = localStorage.getItem('journalPath')
-      if (!journalPath || this.content === this.lastSavedContent) return
+      if (!journalPath) return
 
       try {
-        const filePath = path.join(journalPath, this.filename)
-        await fs.promises.writeFile(filePath, this.content, 'utf8')
-        this.lastSavedContent = this.content
-        console.log('Saved to:', filePath)
+        // Create today's file if it doesn't exist
+        const todayFile = this.getTodayFilename()
+        const todayPath = path.join(journalPath, todayFile)
+        if (!fs.existsSync(todayPath)) {
+          await fs.promises.writeFile(todayPath, '', 'utf8')
+        }
+
+        // Read all files
+        const files = await fs.promises.readdir(journalPath)
+        const mdFiles = files
+          .filter(file => file.endsWith('.md'))
+          .sort()
+          .reverse()
+
+        this.entries = await Promise.all(
+          mdFiles.map(async file => {
+            const filePath = path.join(journalPath, file)
+            const content = await fs.promises.readFile(filePath, 'utf8')
+            return {
+              date: file,
+              content: content
+            }
+          })
+        )
+
+        // After loading entries, resize all textareas
+        this.$nextTick(() => {
+          document.querySelectorAll('textarea').forEach(textarea => {
+            this.autoResize({ target: textarea })
+          })
+        })
       } catch (err) {
-        console.error('Failed to save file:', err)
+        console.error('Failed to load entries:', err)
       }
+    },
+    async saveEntry(entry) {
+      const journalPath = localStorage.getItem('journalPath')
+      if (!journalPath) return
+
+      try {
+        const filePath = path.join(journalPath, entry.date)
+        await fs.promises.writeFile(filePath, entry.content, 'utf8')
+      } catch (err) {
+        console.error('Failed to save entry:', err)
+      }
+    },
+    autoResize(event) {
+      const textarea = event.target
+      textarea.style.height = 'auto'
+      textarea.style.height = textarea.scrollHeight + 'px'
     }
   },
-  async mounted() {
-    // Load existing content when component mounts
+  mounted() {
+    this.loadEntries()
+
+    // Watch for file changes
     const journalPath = localStorage.getItem('journalPath')
     if (journalPath) {
-      try {
-        const filePath = path.join(journalPath, this.filename)
-        if (fs.existsSync(filePath)) {
-          this.content = await fs.promises.readFile(filePath, 'utf8')
-          this.lastSavedContent = this.content
+      fs.watch(journalPath, (eventType, filename) => {
+        if (filename && filename.endsWith('.md')) {
+          this.loadEntries()
         }
-      } catch (err) {
-        console.error('Failed to load file:', err)
-      }
+      })
     }
   }
 }
@@ -84,19 +121,28 @@ export default {
 
 <style scoped>
 .editor {
-  height: 100%;
+  position: absolute;
+  top: 30px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   padding: 40px 20px 20px 20px;
+  overflow-y: auto;
+}
+
+.entry {
+  margin-bottom: 3rem;
 }
 
 h2 {
   margin-bottom: 0.5rem;
   color: #93A1A1;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 textarea {
   width: 100%;
-  height: calc(100% - 60px);
+  min-height: 1.5em;
   background: transparent;
   border: none;
   outline: none;
@@ -104,5 +150,6 @@ textarea {
   line-height: 1.5;
   resize: none;
   padding: 0;
+  overflow: hidden;
 }
 </style>
