@@ -5,7 +5,12 @@ Tolog is an open-source todo and journal app, similar to [Logseq](https://logseq
 ## Features
 
 - [x] Daily journal (stored locally)
+- [ ] Comprehensive development tests
+- [ ] Markdown support
 - [ ] Integrated daily todo list
+- [ ] Comprehensive search
+- [ ] Git Based Daily Changes
+- [ ] Improved Interface
 
 ## Development
 
