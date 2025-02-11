@@ -23,7 +23,8 @@ export default {
   },
   data() {
     return {
-      entries: []
+      entries: [],
+      initialized: false
     }
   },
   methods: {
@@ -46,25 +47,42 @@ export default {
       const day = String(date.getDate()).padStart(2, '0')
       return `${year}_${month}_${day}.md`
     },
+    getDefaultJournalPath() {
+      const homedir = require('os').homedir();
+      return path.join(homedir, 'journal');
+    },
     async loadEntries() {
-      const journalPath = localStorage.getItem('journalPath')
-      if (!journalPath) return
+      let journalPath = localStorage.getItem('journalPath');
+      
+      // If no path is set, use default path
+      if (!journalPath) {
+        journalPath = this.getDefaultJournalPath();
+        localStorage.setItem('journalPath', journalPath);
+      }
 
       try {
-        // Create today's file if it doesn't exist
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(journalPath)) {
+          await fs.promises.mkdir(journalPath, { recursive: true });
+        }
+
+        // Always create today's file first
         const todayFile = this.getTodayFilename()
         const todayPath = path.join(journalPath, todayFile)
-        if (!fs.existsSync(todayPath)) {
-          await fs.promises.writeFile(todayPath, '', 'utf8')
-        }
+        await fs.promises.writeFile(todayPath, '', { flag: 'a' }) // 'a' flag will create if not exists
 
         // Read all files
         const files = await fs.promises.readdir(journalPath)
-        const mdFiles = files
+        let mdFiles = files
           .filter(file => file.endsWith('.md'))
           .sort()
           .reverse()
 
+        // Ensure today's file is included and at the top
+        mdFiles = mdFiles.filter(file => file !== todayFile)
+        mdFiles.unshift(todayFile)
+
+        // Force Vue to recognize the change by creating a new array
         this.entries = await Promise.all(
           mdFiles.map(async file => {
             const filePath = path.join(journalPath, file)
@@ -76,7 +94,9 @@ export default {
           })
         )
 
-        // After loading entries, resize all textareas
+        this.initialized = true
+
+        // Force textarea resize after entries are loaded
         this.$nextTick(() => {
           document.querySelectorAll('textarea').forEach(textarea => {
             this.autoResize({ target: textarea })
@@ -103,10 +123,10 @@ export default {
       textarea.style.height = textarea.scrollHeight + 'px'
     }
   },
-  mounted() {
-    this.loadEntries()
+  async mounted() {
+    await this.loadEntries()
 
-    // Watch for file changes
+    // Watch for file changes only after initial load
     const journalPath = localStorage.getItem('journalPath')
     if (journalPath) {
       fs.watch(journalPath, (eventType, filename) => {
