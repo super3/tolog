@@ -39,3 +39,13 @@ Note: Requires ImageMagick to be installed (`brew install imagemagick` on macOS)
    npm run dev
    ```
    This will start both the Vite dev server and Electron app in development mode.
+4. Run tests:
+   ```bash
+   npm run test
+   ```
+   This will run the test suite using Vitest.
+5. Generate test coverage report:
+   ```bash
+   npm run test:coverage
+   ```
+   This will generate a detailed test coverage report in HTML, JSON and text formats.

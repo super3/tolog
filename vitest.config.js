@@ -5,6 +5,17 @@ export default defineConfig({
   plugins: [vue()],
   test: {
     environment: 'happy-dom',
-    globals: true
+    globals: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'dist/',
+        '**/*.config.js',
+        '**/*.d.ts',
+        'coverage/**'
+      ]
+    }
   }
 }) 
