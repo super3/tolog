@@ -1,6 +1,6 @@
-# Memly
+# Tolog
 
-Memly is an open-source note-taking application that uses markdown files for storing notes, similar to Logseq. It provides a clean and intuitive interface for managing your personal knowledge base.
+Tolog is an open-source todo and journal app that uses markdown files for storing notes, similar to [Logseq](https://logseq.com/). Our goal is to provide a simple and intuitive interface to manage your thoughts and get things done.
 
 ## Features
 
