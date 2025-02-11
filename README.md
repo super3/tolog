@@ -1,15 +1,18 @@
 # Tolog
 
-Tolog is an open-source todo and journal app that uses markdown files for storing notes, similar to [Logseq](https://logseq.com/). Our goal is to provide a simple and intuitive interface to manage your thoughts and get things done.
+Tolog is an open-source todo and journal app, similar to [Logseq](https://logseq.com/). Our goal is to provide a simple and intuitive interface to manage your thoughts and get things done.
 
 ## Features
 
-- Markdown-based note-taking
-- Local file storage
-- Bidirectional linking
-- Daily notes
+- [x] Daily journal (stored locally)
+- [ ] Integrated daily todo list
 
 ## Development
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
 
 ### Icon Generation
 To generate the application icons:
@@ -18,11 +21,6 @@ To generate the application icons:
 2. Generate PNG from SVG: `bash convert -background none src/assets/journal-icon.svg public/icon.png`
 
 Note: Requires ImageMagick to be installed (`brew install imagemagick` on macOS).
-
-### Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
 
 ### Getting Started
 
