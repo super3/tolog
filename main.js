@@ -10,10 +10,10 @@ if (process.platform === 'darwin') {
   try {
     // Use PNG icon for development environment
     const iconPath = path.join(__dirname, 'src/assets/icons/png/icon.png')
-    console.log('Loading icon from:', iconPath) // Debug log
+    console.log('Loading icon from:', iconPath)
     app.dock.setIcon(iconPath)
   } catch (error) {
-    console.error('Failed to load icon:', error) // Log any errors loading the icon
+    console.error('Failed to load icon:', error)
   }
 }
 
