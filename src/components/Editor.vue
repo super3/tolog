@@ -152,12 +152,19 @@ export default {
 
 .entry {
   margin-bottom: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(147, 161, 161, 0.5);
+}
+
+.entry:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 h2 {
   margin-bottom: 0.5rem;
   color: #93A1A1;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
 }
 
 textarea {
