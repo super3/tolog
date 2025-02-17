@@ -106,17 +106,6 @@ export default {
         console.error('Failed to load entries:', err)
       }
     },
-    // async saveEntry(entry) {
-      // const journalPath = localStorage.getItem('journalPath')
-    //   if (!journalPath) return
-
-    //   try {
-    //     const filePath = path.join(journalPath, entry.date)
-    //     await fs.promises.writeFile(filePath, entry.content, 'utf8')
-    //   } catch (err) {
-    //     console.error('Failed to save entry:', err)
-    //   }
-    // },
 
     async saveEntry(entry) {
       const journalPath = localStorage.getItem('journalPath')
