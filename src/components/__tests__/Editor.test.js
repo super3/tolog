@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterAll } from 'vitest';
 import { mount } from '@vue/test-utils';
 import Editor from '../Editor.vue';
 import path from 'path';
@@ -64,5 +64,15 @@ describe('Editor.vue', () => {
   
     const fileContent = fs.readFileSync('test-journal/2024_03_15.md', 'utf8');
     expect(fileContent).toBe('Hello World');
+  });
+
+  // Cleanup function to delete the test-journal folder after the tests
+  afterAll(async () => {
+    try {
+      await fs.promises.rm(testDir, { recursive: true, force: true });
+      console.log(`Cleaned up test directory: ${testDir}`);
+    } catch (err) {
+      console.error('Error cleaning up test directory:', err);
+    }
   });
 });
