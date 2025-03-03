@@ -3,7 +3,7 @@
   "productName": "Tolog",
   "version": "0.1.0",
   "description": "An open-source markdown-based note-taking app",
-  "main": "main.js",
+  "main": "electron-main.js",
   "scripts": {
     "start": "electron .",
     "dev": "vite dev & wait-on http://localhost:5173 && electron . --dev",
@@ -21,7 +21,7 @@
     },
     "files": [
       "dist/**/*",
-      "main.js",
+      "electron-main.js",
       "package.json"
     ],
     "mac": {
