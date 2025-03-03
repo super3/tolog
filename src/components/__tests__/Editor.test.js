@@ -245,4 +245,42 @@ describe('Editor.vue', () => {
     
     expect(loadEntriesMock).toHaveBeenCalled();
   });
+  
+  it('initializes with the correct data structure', () => {
+    const data = Editor.data();
+    expect(data).toEqual({
+      entries: [],
+      initialized: false
+    });
+  });
+  
+  it('formats dates with correct ordinal suffixes', () => {
+    // Test cases for different day numbers to cover all branches
+    // 1st - should use 'st' suffix
+    expect(Editor.methods.formatDate('2024_01_01.md')).toContain('Jan 1st, 2024');
+    
+    // 2nd - should use 'nd' suffix
+    expect(Editor.methods.formatDate('2024_01_02.md')).toContain('Jan 2nd, 2024');
+    
+    // 3rd - should use 'rd' suffix
+    expect(Editor.methods.formatDate('2024_01_03.md')).toContain('Jan 3rd, 2024');
+    
+    // 4th - should use 'th' suffix (match > 3)
+    expect(Editor.methods.formatDate('2024_01_04.md')).toContain('Jan 4th, 2024');
+    
+    // 11th - should use 'th' suffix (match > 3 && match < 21)
+    expect(Editor.methods.formatDate('2024_01_11.md')).toContain('Jan 11th, 2024');
+    
+    // 21st - should use 'st' suffix (match % 10 === 1)
+    expect(Editor.methods.formatDate('2024_01_21.md')).toContain('Jan 21st, 2024');
+    
+    // 22nd - should use 'nd' suffix (match % 10 === 2)
+    expect(Editor.methods.formatDate('2024_01_22.md')).toContain('Jan 22nd, 2024');
+    
+    // 23rd - should use 'rd' suffix (match % 10 === 3)
+    expect(Editor.methods.formatDate('2024_01_23.md')).toContain('Jan 23rd, 2024');
+    
+    // 24th - should use 'th' suffix (match % 10 > 3)
+    expect(Editor.methods.formatDate('2024_01_24.md')).toContain('Jan 24th, 2024');
+  });
 });
