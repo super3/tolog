@@ -91,7 +91,29 @@
 </template>
 
 <script>
-const { ipcRenderer } = require('electron')
+// Mock ipcRenderer for test environment
+export const mockIpcRenderer = {
+  invoke: async () => ({ canceled: false, filePath: '/test/mock/path' })
+};
+
+// Get the ipcRenderer with handling for tests
+let _ipcRenderer = null;
+
+// For testing purposes - allows us to track if the catch block was executed
+export let catchBlockExecuted = false;
+
+// Try to get the real ipcRenderer from electron
+try {
+  const { ipcRenderer } = require('electron');
+  _ipcRenderer = ipcRenderer;
+} catch (err) {
+  // Fall back to mock if electron not available
+  _ipcRenderer = mockIpcRenderer;
+  // Add console log for testing
+  console.log('Electron import failed, using mock');
+  catchBlockExecuted = true;
+}
+
 import Editor from './components/Editor.vue'
 
 export default {
@@ -110,7 +132,8 @@ export default {
         { color: '#1A237E', textColor: '#C5CAE9' }, // dark blue with light blue text
         { color: '#4A148C', textColor: '#E1BEE7' }  // dark purple with light purple text
       ],
-      journalPath: localStorage.getItem('journalPath') || ''
+      journalPath: localStorage.getItem('journalPath') || '',
+      ipcRenderer: _ipcRenderer
     }
   },
   computed: {
@@ -126,6 +149,15 @@ export default {
       const g = parseInt(color.slice(3, 5), 16)
       const b = parseInt(color.slice(5, 7), 16)
       return `rgba(${r}, ${g}, ${b}, 0.2)`
+    },
+    getScrollbarHoverColor() {
+      const theme = this.themes.find(t => t.color === this.selectedTheme)
+      const color = theme ? theme.textColor : '#000000'
+      // Convert hex to rgb with opacity
+      const r = parseInt(color.slice(1, 3), 16)
+      const g = parseInt(color.slice(3, 5), 16)
+      const b = parseInt(color.slice(5, 7), 16)
+      return `rgba(${r}, ${g}, ${b}, 0.3)`
     }
   },
   methods: {
@@ -150,7 +182,7 @@ export default {
     },
     async chooseFolder() {
       try {
-        const result = await ipcRenderer.invoke('dialog:openDirectory')
+        const result = await this.ipcRenderer.invoke('dialog:openDirectory')
         if (!result.canceled && result.filePath) {
           this.journalPath = result.filePath
           localStorage.setItem('journalPath', result.filePath)
@@ -213,7 +245,7 @@ html, body {
 }
 
 .v-main::-webkit-scrollbar-thumb:hover {
-  background: v-bind('getScrollbarColor').replace('0.2', '0.3');
+  background: v-bind('getScrollbarHoverColor');
 }
 
 .v-navigation-drawer {
