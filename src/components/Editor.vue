@@ -110,7 +110,7 @@ export default {
     async saveEntry(entry) {
       const journalPath = localStorage.getItem('journalPath')
       console.log('🚀 saveEntry is being called with:', entry, journalPath);
-      await fs.promises.writeFile(`${journalPath}/${entry.date}`, entry.content, 'utf8');
+      await fs.promises.writeFile(path.join(journalPath, entry.date), entry.content, 'utf8');
     },
     autoResize(event) {
       const textarea = event.target
