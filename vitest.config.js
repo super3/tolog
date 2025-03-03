@@ -6,6 +6,13 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
+    deps: {
+      optimizer: {
+        web: {
+          exclude: ['electron', 'fs', 'path', 'url']
+        }
+      }
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
