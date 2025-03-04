@@ -43,7 +43,7 @@ Note: Requires ImageMagick to be installed (`brew install imagemagick` on macOS)
    ```bash
    npm run test
    ```
-   This will run the test suite using Vitest, including Electron main process tests.
+   This will run the test suite using Vitest.
 5. Generate test coverage report:
    ```bash
    npm run test:coverage
