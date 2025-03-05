@@ -1,5 +1,7 @@
 # Tolog
 
+[![Tests](https://github.com/super3/tolog/actions/workflows/test.yml/badge.svg)](https://github.com/super3/tolog/actions/workflows/test.yml)
+
 Tolog is an open-source todo and journal app, similar to [Logseq](https://logseq.com/). Our goal is to provide a simple and intuitive interface to manage your thoughts and get things done.
 
 ## Features
