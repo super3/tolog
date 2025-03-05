@@ -1,7 +1,7 @@
 # Tolog
 
 [![Tests](https://github.com/super3/tolog/actions/workflows/test.yml/badge.svg)](https://github.com/super3/tolog/actions/workflows/test.yml)
-[![Coverage](https://codecov.io/gh/super3/tolog/branch/main/graph/badge.svg?label=Coverage)](https://codecov.io/gh/super3/tolog)
+[![codecov](https://codecov.io/gh/super3/tolog/branch/main/graph/badge.svg)](https://codecov.io/gh/super3/tolog)
 
 Tolog is an open-source todo and journal app, similar to [Logseq](https://logseq.com/). Our goal is to provide a simple and intuitive interface to manage your thoughts and get things done.
 
