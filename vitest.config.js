@@ -15,7 +15,13 @@ export default defineConfig({
         '**/*.config.js',
         '**/*.d.ts',
         'coverage/**'
-      ]
+      ],
+      include: [
+        'electron-main.js',
+        'src/**/*.{js,ts,vue}'
+      ],
+      all: true,
+      extension: ['.js', '.ts', '.vue']
     }
   }
 }) 
