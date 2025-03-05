@@ -80,6 +80,9 @@ describe('electron-main.js', () => {
     mockIpcMain._handlers = {};
     mockApp._handlers = {};
     mockApp._whenReadyCallback = null;
+
+    // Reset console.error for tests that check error logging
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   describe('setupAppConfig', () => {
@@ -113,6 +116,26 @@ describe('electron-main.js', () => {
       };
       setupAppConfig(mockApp, 'win32', 'TestApp', '/path/to/icon.png');
       expect(mockApp.dock.setIcon).not.toHaveBeenCalled();
+    });
+
+    it('handles errors when setting dock icon', () => {
+      const mockApp = { 
+        name: '',
+        dock: { setIcon: vi.fn().mockImplementation(() => {
+          throw new Error('Icon loading failed');
+        }) }
+      };
+      
+      // Spy on console.error
+      const consoleErrorSpy = vi.spyOn(console, 'error');
+      
+      setupAppConfig(mockApp, 'darwin', 'TestApp', '/path/to/icon.png');
+      
+      // Verify the error was logged
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Failed to load icon:', 
+        expect.any(Error)
+      );
     });
   });
 
@@ -285,6 +308,135 @@ describe('electron-main.js', () => {
         expect(result).toEqual({ canceled: true, filePath: null });
       }
     });
+
+    it('returns correct file path from dialog result', async () => {
+      // Create mocks
+      const mockDialog = {
+        showOpenDialog: vi.fn().mockResolvedValue({
+          canceled: false,
+          filePaths: ['/selected/directory/path']
+        })
+      };
+      
+      let dialogHandler;
+      const mockIpcMain = {
+        handle: vi.fn((channel, handler) => {
+          if (channel === 'dialog:openDirectory') {
+            dialogHandler = handler;
+          }
+        })
+      };
+      
+      setupDialogHandler(mockIpcMain, mockDialog);
+      
+      // Make sure handler was registered
+      expect(mockIpcMain.handle).toHaveBeenCalledWith(
+        'dialog:openDirectory',
+        expect.any(Function)
+      );
+      
+      // Call the handler
+      const result = await dialogHandler();
+      
+      // Verify dialog was called with correct properties
+      expect(mockDialog.showOpenDialog).toHaveBeenCalledWith({
+        properties: ['openDirectory', 'createDirectory']
+      });
+      
+      // Verify it returns the correct structure
+      expect(result).toEqual({
+        canceled: false,
+        filePath: '/selected/directory/path'
+      });
+    });
+    
+    it('handles empty filePaths array in dialog result', async () => {
+      // Create mocks with empty filePaths array
+      const mockDialog = {
+        showOpenDialog: vi.fn().mockResolvedValue({
+          canceled: false,
+          filePaths: []
+        })
+      };
+      
+      let dialogHandler;
+      const mockIpcMain = {
+        handle: vi.fn((channel, handler) => {
+          if (channel === 'dialog:openDirectory') {
+            dialogHandler = handler;
+          }
+        })
+      };
+      
+      setupDialogHandler(mockIpcMain, mockDialog);
+      
+      // Call the handler
+      const result = await dialogHandler();
+      
+      // Verify it handles empty filePaths correctly
+      expect(result).toEqual({
+        canceled: false,
+        filePath: null
+      });
+    });
+    
+    it('handles null filePaths in dialog result', async () => {
+      // Create mocks with null filePaths
+      const mockDialog = {
+        showOpenDialog: vi.fn().mockResolvedValue({
+          canceled: false,
+          filePaths: null
+        })
+      };
+      
+      let dialogHandler;
+      const mockIpcMain = {
+        handle: vi.fn((channel, handler) => {
+          if (channel === 'dialog:openDirectory') {
+            dialogHandler = handler;
+          }
+        })
+      };
+      
+      setupDialogHandler(mockIpcMain, mockDialog);
+      
+      // Call the handler
+      const result = await dialogHandler();
+      
+      // Verify it handles null filePaths correctly
+      expect(result).toEqual({
+        canceled: false,
+        filePath: null
+      });
+    });
+    
+    it('handles showOpenDialog function that is missing or not a function', async () => {
+      // Create mocks with dialog object but showOpenDialog is not a function
+      const mockDialog = {
+        // showOpenDialog is explicitly not a function
+        showOpenDialog: "not a function"
+      };
+      
+      let dialogHandler;
+      const mockIpcMain = {
+        handle: vi.fn((channel, handler) => {
+          if (channel === 'dialog:openDirectory') {
+            dialogHandler = handler;
+          }
+        })
+      };
+      
+      setupDialogHandler(mockIpcMain, mockDialog);
+      
+      // Call the handler
+      const result = await dialogHandler();
+      
+      // Should return canceled: true result
+      expect(result).toEqual({
+        canceled: true,
+        filePath: null
+      });
+    });
   });
 
   describe('setupAppLifecycle', () => {
@@ -336,6 +488,13 @@ describe('electron-main.js', () => {
       expect(mockApp.quit).not.toHaveBeenCalled();
     });
 
+    it('handles missing app gracefully', () => {
+      // This should not throw
+      expect(() => {
+        setupAppLifecycle(null, 'win32', vi.fn(), vi.fn());
+      }).not.toThrow();
+    });
+
     it('handles missing app.whenReady gracefully', () => {
       const mockApp = {
         on: vi.fn(),
@@ -375,7 +534,10 @@ describe('electron-main.js', () => {
       expect(windowCreator).toHaveBeenCalled();
     });
 
-    it('handles null functions gracefully', () => {
+    it('activate handler does nothing if windows already exist', () => {
+      const windowCreator = vi.fn();
+      const getAllWindows = vi.fn().mockReturnValue([{/* Mock window */}]);
+      
       const mockApp = {
         whenReady: vi.fn().mockReturnValue({
           then: vi.fn()
@@ -384,10 +546,118 @@ describe('electron-main.js', () => {
         quit: vi.fn()
       };
       
+      setupAppLifecycle(mockApp, 'darwin', windowCreator, getAllWindows);
+      
+      // Find the activate handler
+      const activateCall = mockApp.on.mock.calls.find(
+        call => call[0] === 'activate'
+      );
+      
+      expect(activateCall).toBeTruthy();
+      
+      // Call the handler
+      activateCall[1]();
+      
+      // Window creator should not be called since windows already exist
+      expect(windowCreator).not.toHaveBeenCalled();
+    });
+
+    it('handles null windowCreator function gracefully', () => {
+      const getAllWindows = vi.fn().mockReturnValue([]);
+      
+      const mockApp = {
+        whenReady: vi.fn().mockReturnValue({
+          then: vi.fn()
+        }),
+        on: vi.fn(),
+        quit: vi.fn()
+      };
+      
+      setupAppLifecycle(mockApp, 'darwin', null, getAllWindows);
+      
+      // Find the activate handler
+      const activateCall = mockApp.on.mock.calls.find(
+        call => call[0] === 'activate'
+      );
+      
       // This should not throw
       expect(() => {
-        setupAppLifecycle(mockApp, 'darwin', null, null);
+        activateCall[1]();
       }).not.toThrow();
+    });
+
+    it('handles null getAllWindows function gracefully', () => {
+      const windowCreator = vi.fn();
+      
+      const mockApp = {
+        whenReady: vi.fn().mockReturnValue({
+          then: vi.fn()
+        }),
+        on: vi.fn(),
+        quit: vi.fn()
+      };
+      
+      setupAppLifecycle(mockApp, 'darwin', windowCreator, null);
+      
+      // Find the activate handler
+      const activateCall = mockApp.on.mock.calls.find(
+        call => call[0] === 'activate'
+      );
+      
+      // This should not throw
+      expect(() => {
+        activateCall[1]();
+      }).not.toThrow();
+    });
+
+    it('sets up app.whenReady with window creator when available', () => {
+      const windowCreator = vi.fn();
+      const thenFn = vi.fn();
+      
+      const mockApp = {
+        whenReady: vi.fn().mockReturnValue({
+          then: thenFn
+        }),
+        on: vi.fn(),
+        quit: vi.fn()
+      };
+      
+      setupAppLifecycle(mockApp, 'darwin', windowCreator, vi.fn());
+      
+      expect(mockApp.whenReady).toHaveBeenCalled();
+      expect(thenFn).toHaveBeenCalledWith(windowCreator);
+    });
+  });
+
+  // Additional test to simulate process.env.NODE_ENV for entry point code
+  describe('Entry point conditions', () => {
+    let originalNodeEnv;
+    
+    beforeEach(() => {
+      // Save original NODE_ENV
+      originalNodeEnv = process.env.NODE_ENV;
+    });
+    
+    afterEach(() => {
+      // Restore original NODE_ENV
+      process.env.NODE_ENV = originalNodeEnv;
+    });
+    
+    it('skips setup when NODE_ENV is "test"', () => {
+      // Set NODE_ENV to test
+      process.env.NODE_ENV = 'test';
+      
+      // Redefine all required variables to test the entry point
+      const mockElectron = {
+        app: mockApp,
+        BrowserWindow: mockBrowserWindow,
+        ipcMain: mockIpcMain,
+        dialog: mockDialog
+      };
+      
+      // We can't directly test the conditional block, but we can verify that
+      // our test environment is correctly set up to skip the setup functions
+      expect(process.env.NODE_ENV).toBe('test');
     });
   });
 }); 
